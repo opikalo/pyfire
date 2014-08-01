@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" height="115.85px" width="17.0px" xmlns="http://www.w3.org/2000/svg">
+  <g transform="matrix(1, 0, 0, 1, -7.9, 1.7)">
+    <path d="M10.9 -1.7 L10.0 2.8 7.9 2.8 8.8 -1.7 10.9 -1.7" fill="#e4e4e4" fill-rule="evenodd" stroke="none"/>
+    <path d="M12.7 -1.7 L11.8 2.8 9.7 2.8 10.6 -1.7 12.7 -1.7" fill="#bc100d" fill-rule="evenodd" stroke="none"/>
+    <path d="M14.75 -1.7 L13.85 2.8 11.75 2.8 12.65 -1.7 14.75 -1.7" fill="#e4e4e4" fill-rule="evenodd" stroke="none"/>
+    <path d="M16.8 -1.7 L15.9 2.8 13.8 2.8 14.7 -1.7 16.8 -1.7" fill="#bc100d" fill-rule="evenodd" stroke="none"/>
+    <path d="M18.85 -1.7 L17.95 2.8 15.85 2.8 16.75 -1.7 18.85 -1.7" fill="#e4e4e4" fill-rule="evenodd" stroke="none"/>
+    <path d="M20.65 -1.7 L19.75 2.8 17.65 2.8 18.55 -1.7 20.65 -1.7" fill="#bc100d" fill-rule="evenodd" stroke="none"/>
+    <path d="M22.7 -1.7 L21.8 2.8 19.7 2.8 20.6 -1.7 22.7 -1.7" fill="#e4e4e4" fill-rule="evenodd" stroke="none"/>
+    <path d="M21.3 106.75 L20.0 103.05 22.1 103.05 23.4 106.75 21.3 106.75" fill="#e4e4e4" fill-rule="evenodd" stroke="none"/>
+    <path d="M19.45 106.75 L18.15 103.05 20.25 103.05 21.55 106.75 19.45 106.75" fill="#bc100d" fill-rule="evenodd" stroke="none"/>
+    <path d="M17.45 106.75 L16.15 103.05 18.25 103.05 19.55 106.75 17.45 106.75" fill="#e4e4e4" fill-rule="evenodd" stroke="none"/>
+    <path d="M15.35 106.75 L14.05 103.05 16.15 103.05 17.45 106.75 15.35 106.75" fill="#bc100d" fill-rule="evenodd" stroke="none"/>
+    <path d="M13.35 106.75 L12.05 103.05 14.15 103.05 15.45 106.75 13.35 106.75" fill="#e4e4e4" fill-rule="evenodd" stroke="none"/>
+    <path d="M11.5 106.75 L10.2 103.05 12.3 103.05 13.6 106.75 11.5 106.75" fill="#bc100d" fill-rule="evenodd" stroke="none"/>
+    <path d="M9.5 106.75 L8.2 103.05 10.3 103.05 11.6 106.75 9.5 106.75" fill="#e4e4e4" fill-rule="evenodd" stroke="none"/>
+    <path d="M14.15 1.9 L14.15 114.15 11.75 114.15 11.75 1.9 14.15 1.9" fill="url(#gradient0)" fill-rule="evenodd" stroke="none"/>
+    <path d="M24.9 1.9 L24.9 114.15 22.5 114.15 22.5 1.9 24.9 1.9" fill="url(#gradient1)" fill-rule="evenodd" stroke="none"/>
+  </g>
+  <defs>
+    <linearGradient gradientTransform="matrix(0.0015, 0.0, 0.0, 0.0685, 12.95, 58.0)" gradientUnits="userSpaceOnUse" id="gradient0" spreadMethod="pad" x1="-819.2" x2="819.2">
+      <stop offset="0.0" stop-color="#332f30"/>
+      <stop offset="0.36470588235294116" stop-color="#dfdbdc"/>
+      <stop offset="0.5176470588235295" stop-color="#a7a7a7"/>
+      <stop offset="0.6901960784313725" stop-color="#dfdbdc"/>
+      <stop offset="1.0" stop-color="#332f30"/>
+    </linearGradient>
+    <linearGradient gradientTransform="matrix(0.0015, 0.0, 0.0, 0.0685, 23.7, 58.0)" gradientUnits="userSpaceOnUse" id="gradient1" spreadMethod="pad" x1="-819.2" x2="819.2">
+      <stop offset="0.0" stop-color="#332f30"/>
+      <stop offset="0.36470588235294116" stop-color="#dfdbdc"/>
+      <stop offset="0.5176470588235295" stop-color="#a7a7a7"/>
+      <stop offset="0.6901960784313725" stop-color="#dfdbdc"/>
+      <stop offset="1.0" stop-color="#332f30"/>
+    </linearGradient>
+  </defs>
+</svg>

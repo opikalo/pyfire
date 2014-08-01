@@ -1,0 +1,11 @@
+Congratulations, you have become one of the drivers in the Fire Department. 
+--- RECORDSEPARATOR ---
+Your task is to drive different fire trucks. 
+--- RECORDSEPARATOR ---
+After the call receipt, you should to get to the fire as soon as possible 
+--- RECORDSEPARATOR ---
+and do not crash your car along the way. 
+--- RECORDSEPARATOR ---
+Follow the arrows, but observe the Road Safety Authority. 
+--- RECORDSEPARATOR ---
+Fire safety of the city depends on you!
