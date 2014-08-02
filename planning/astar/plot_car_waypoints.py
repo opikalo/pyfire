@@ -10,6 +10,7 @@ from scipy.misc import imread
 
 root = os.path.join(r"c:\local_tools\experimental\pyfire")
 
+import scipy.spatial
 
 def plot_waypoints():
     filename = os.path.join(root, 'flash', 'fft2', 
@@ -34,6 +35,23 @@ def plot_waypoints():
         x.append(p['x'])
         y.append(p['y'])
 
+    #find the nearest node
+    current_p = [ 2650,2650 ]
+    goal_p = [1900, 400]
+    c_x = numpy.array(zip(x,y))
+    tree = scipy.spatial.cKDTree(zip(x,y))
+    
+    dist, indexes = tree.query([current_p, goal_p])
+
+    G.add_node(9999, pos=current_p)
+    G.add_edge(9999, indexes[0])
+
+
+    G.add_node(10000, pos=goal_p)
+    G.add_edge(indexes[1], 10000)
+
+    print dist, indexes
+
     pos = nx.get_node_attributes(G,'pos')
     
     return G, pos
@@ -54,6 +72,12 @@ plt.grid()
 plt.imshow(img,zorder=0)
 
 G, pos = plot_waypoints()
-nx.draw(G,pos, node_size=5)
+#nx.draw(G,pos, node_size=5)
+pth = nx.astar_path(G, 9999, 10000)
+
+H = G.subgraph(pth)
+pos = nx.get_node_attributes(H,'pos')
+nx.draw(H,pos, node_size=5)
+print pth
 
 plt.show()
