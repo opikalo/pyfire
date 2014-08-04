@@ -128,6 +128,7 @@ def add_weights(graph, data):
         BLUE_COLOR: 1000
     }
 
+    #TODO: figure out why we have other colors
     OTHER_PENALTY = 10
 
     color_map = {
@@ -172,6 +173,9 @@ def stitch(local_graph, global_graph, kd_tree, tolerance, target, rename_string)
         dist, indexes = kd_tree.query([node_pos])
         if dist[0] < tolerance:
             #find astar path to the selected close proximity  node
+            #TODO: compute node path here, and save it, extract length like this:
+            # path = astar_path(G, source, target, heuristic)
+            # length =  sum(G[u][v].get(weight, 1) for u, v in zip(path[:-1], path[1:]))
             path_length = nx.astar_path_length(local_graph, target, node)
             entry_node = indexes[0]
 
