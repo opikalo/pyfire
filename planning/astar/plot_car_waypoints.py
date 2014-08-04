@@ -8,7 +8,7 @@ import networkx as nx
 
 from scipy.misc import imread
 
-root = os.path.join(r"c:\local_tools\experimental\pyfire")
+from utils import root
 
 import scipy.spatial
 
@@ -39,16 +39,16 @@ def plot_waypoints():
     current_p = [ 2650,2650 ]
     goal_p = [1900, 400]
     c_x = numpy.array(zip(x,y))
-    tree = scipy.spatial.cKDTree(zip(x,y))
+    tree = scipy.spatial.cKDTree(c_x)
     
     dist, indexes = tree.query([current_p, goal_p])
 
-    G.add_node(9999, pos=current_p)
-    G.add_edge(9999, indexes[0])
+    G.add_node('start', pos=current_p)
+    G.add_edge('start', indexes[0])
 
 
-    G.add_node(10000, pos=goal_p)
-    G.add_edge(indexes[1], 10000)
+    G.add_node('goal', pos=goal_p)
+    G.add_edge(indexes[1], 'goal')
 
     print dist, indexes
 
@@ -72,8 +72,9 @@ plt.grid()
 plt.imshow(img,zorder=0)
 
 G, pos = plot_waypoints()
+#to plot full graph
 #nx.draw(G,pos, node_size=5)
-pth = nx.astar_path(G, 9999, 10000)
+pth = nx.astar_path(G, 'start', 'goal')
 
 H = G.subgraph(pth)
 pos = nx.get_node_attributes(H,'pos')
