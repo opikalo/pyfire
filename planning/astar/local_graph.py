@@ -19,6 +19,12 @@ import scipy.spatial
 from global_map import plot_map
 from waypoints import graph_from_waypoints
 
+#the density of the local unconstrained grid graph
+LOCAL_GRAPH_DIM = 20
+
+#the size of the local unconstrained grid graph
+LOCAL_GRAPH_WIDTH  = 1000
+
 def plot_waypoints():
     filename = os.path.join(root, 'flash', 'fft2', 
                             'export', 'binaryData', '910.bin')
@@ -202,6 +208,80 @@ def stitch(local_graph, global_graph, kd_tree, tolerance, target, rename_string)
 
     return global_graph
 
+def plan_path(start_pos, goal_pos):
+    """ Actual path planneer that integrates local/global graphs and finds path
+    """
+
+    #for now, just hard code this
+    filename = os.path.join(root, 'flash', 'fft2', 'processed', 'map.png')
+    img_data = imread(filename)
+
+    #make local unconstrained motion graph
+    #create unconstrained local graph at the start
+    start_local_graph, start_center = grid_graph(start_pos, 
+                                                 dim=LOCAL_GRAPH_DIM,
+                                                 width=LOCAL_GRAPH_WIDTH)
+
+    add_weights(start_local_graph, img_data)
+
+    #create unconstrained local graph at the goal
+    goal_local_graph, goal_center = grid_graph(goal_pos, 
+                                               dim=LOCAL_GRAPH_DIM, 
+                                               width=LOCAL_GRAPH_WIDTH)
+
+    add_weights(goal_local_graph, img_data)
+
+    #make global graph based on waypoints
+    filename = os.path.join(root, 'flash', 'fft2', 
+                            'export', 'binaryData', '910.bin')
+
+    global_graph = graph_from_waypoints(filename)
+
+    #make kd-tree from the global graph
+    pos = nx.get_node_attributes(global_graph, 'pos')
+
+    #sorted by keys
+    d_x = OrderedDict(sorted(pos.items(), key=lambda t: t[0])).values()
+
+    c_x = numpy.array(d_x)
+
+    global_tree = scipy.spatial.cKDTree(c_x)
+
+    #stitch together unconstrained local with global 
+    u_graph = stitch(start_local_graph, global_graph, global_tree, 100, start_center, 'S-')
+
+    u_graph = stitch(goal_local_graph, u_graph, global_tree, 100, goal_center, 'G-')
+
+    astar_path = nx.astar_path(u_graph, 'S-' + str(start_center), 'G-' + str(goal_center))
+
+
+    #rename node labels from '0' to final node, i.e. '35'
+    count = 0
+    mapping = {}
+    for node in astar_path:
+        mapping[node] = count
+        count += 1
+
+    planned_path = u_graph.subgraph(astar_path)
+
+    planned_path = nx.relabel_nodes(planned_path, mapping)
+
+    return planned_path
+
+def test_planner():
+    start_pos = [2650, 2650]
+    goal_pos = [1900, 400]
+
+    planned_path = plan_path(start_pos, goal_pos)
+
+    planned_path_pos = nx.get_node_attributes(planned_path, 'pos')
+
+    plot_map()
+    
+    nx.draw(planned_path, planned_path_pos, node_size=5, edge_color='r')
+
+    plt.show()
+
 
 def test_grid():
     plot_map()
@@ -332,4 +412,4 @@ def test_stitch():
     plt.show()
 
 if __name__ == '__main__':
-    test_stitch()
+    test_planner()

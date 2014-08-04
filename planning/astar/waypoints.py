@@ -27,6 +27,10 @@ def graph_from_waypoints(filename):
         n_y = p['y']
 
         G.add_node(n_id, pos=(n_x, n_y))
+
+        #all waypoints are marked as fixed,
+        #this is important for smoothing later on
+        G.node[n_id]['fixed'] = True
         
         for c in p['connectionIDs']:
             G.add_edge(n_id, c)
