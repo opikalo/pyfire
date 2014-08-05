@@ -151,7 +151,7 @@ def smooth_fixed(path, fix, weight_data = 0.5, weight_smooth = 0.1, tolerance = 
 
 
 
-def smooth_graph(graph_path, start_pos, goal_pos):
+def smooth_graph(graph_path, start_pos, goal_pos, weight_data = 0.5, weight_smooth = 0.1):
     path_pos = nx.get_node_attributes(graph_path, 'pos')
 
     #this relies on the fact that nodes are sorted properly
@@ -162,12 +162,13 @@ def smooth_graph(graph_path, start_pos, goal_pos):
 
     fixed = []
     for node in path_keys:
+        #waypoints are marked as fixed, only local graph is modified
         node_fixed = graph_path.node[node].get('fixed', False)
         fixed.append(node_fixed)
         
 
     #finally, actual smoothing
-    smoothed_path = smooth_fixed(path_list, fixed)
+    smoothed_path = smooth_fixed(path_list, fixed, weight_data, weight_smooth)
 
     #printpaths(path_list, smoothed_path)
     
@@ -177,6 +178,18 @@ def smooth_graph(graph_path, start_pos, goal_pos):
         smoothed_graph.node[k]['pos'] = smoothed_path[i]
 
     return smoothed_graph
+
+def graph_to_path(graph_path): 
+    path_pos = nx.get_node_attributes(graph_path, 'pos')
+
+    #this relies on the fact that nodes are sorted properly
+    od = OrderedDict(sorted(path_pos.items(), key=lambda t: t[0]))
+
+    path_keys = od.keys()
+    path_list = od.values()
+
+    return path_list
+
 
 def test_smooth_graph():
     start_pos = [2650, 2650]
