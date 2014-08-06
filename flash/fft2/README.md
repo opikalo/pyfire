@@ -19,3 +19,10 @@ flash\fft2\export\frames\DefineSprite_551\1.png - bitmap of bushes on the map, u
 
 
 flash\fft2\export\frames\DefineSprite_552\1.png - bitmap of house roofs, another potential candidate for localization, dimensions are 2952 x 2949
+
+
+flash\fft2\export\frames\DefineSprite_772_fla.maps.Map_02\1.png - bitmap of the the map, very useful for localizing images, and obsticle detection. A processed and aligned version of this image is available in flash\fft2\processed\level1_start.png
+
+
+
+

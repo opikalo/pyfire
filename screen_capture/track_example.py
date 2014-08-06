@@ -5,6 +5,7 @@ from multiprocessing import Process, Pipe
 
 import numpy as np
 import matplotlib.pyplot as plt
+
 from pylab import get_current_fig_manager
 
 from localize_map import LocalizeMap
@@ -13,19 +14,6 @@ from capture import Capture, find_best_image
 
 from planning.astar.global_map import (plot_map, GlobalMap, 
                                        MIN_UNCONTRAINED_PENALTY)
-
-class DataStreamProcess(Process):
-    def __init__(self, connec, *args, **kwargs):
-        self.connec = connec
-        Process.__init__(self, *args, **kwargs)
-
-    def run(self):
-        random_gen = np.random.mtrand.RandomState(seed=127260)
-        for _ in range(30):
-            time.sleep(0.01)
-            new_pt = random_gen.uniform(0, 2800, size=2)
-            self.connec.send(new_pt)
-
 
 class LocalizeStreamProcess(Process):
     def __init__(self, connec, *args, **kwargs):
@@ -48,13 +36,17 @@ class LocalizeStreamProcess(Process):
         Process.__init__(self, *args, **kwargs)
 
     def run(self):
+        prev_pos = None
         while True:
+            start_time = time.time()
             time.sleep(0.01)
             template = self.c.snap_gray()
-            pos = self.mapper.localize(template)
-            print pos
-            self.connec.send([pos])
-
+            pos = self.mapper.localize(template, prev_pos)
+            prev_pos = pos
+            time_pos = (time.time(), pos)
+            self.connec.send(time_pos)
+            end_time = time.time()
+            #print 1/(end_time-start_time)
 
 def main():
     conn1, conn2  = Pipe()
@@ -65,26 +57,38 @@ def main():
     #plt.gca().set_ylim([0, 2800])
     plot_map()
     thismanager = get_current_fig_manager()
-    thismanager.window.wm_geometry("+1000+0")
+    thismanager.window.wm_geometry("+700+0")
 
     plt.gca().set_title("Running...")
 
     plt.ion()
 
-    pt = None
+    map_box = None
     while True:
         if not(conn2.poll(0.1)):
             if not(data_stream.is_alive()):
                 break
             else:
                 continue
-        new_positions = conn2.recv()
-        if pt is not None:
-            plt.scatter( [x[0] for x in new_positions], 
-                         [x[1] for x in new_positions])
+
+        (sent_time, map_box) = conn2.recv()
+
+        while (time.time() - sent_time) > 1/20:
+            #we are getting behind by more then a sec
+            (sent_time, map_box) = conn2.recv()
+
+        if map_box is not None:
+            (x0, y0, x1, y1) = map_box
+            plt.gca().set_xlim([x0, x1])
+            plt.gca().set_ylim([y1, y0])
+            
+            #new_position  = (max_loc[0] + w/2, max_loc[1] + h/2)
+            plt.scatter( [(x0 + x1)/2], 
+                         [(y0 + y1)/2])
+
             #plt.plot([pt[0], new_pt[0]], [pt[1], new_pt[1]], "bs:")
             plt.pause(0.001)
-        pt = new_positions
+    map_box = (x0, y0, x1, y1)
 
     plt.gca().set_title("Terminated.")
     plt.draw()

@@ -10,21 +10,56 @@ from matplotlib import pyplot as plt
 from utils import root
 from capture import Capture, find_best_image
 
+SEARCH_MARGIN = 50
+
 class LocalizeMap(object):
     def __init__(self, filename):
         #reference localization image
         self.reference = cv2.imread(filename, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-        
-    def localize(self, template):
+
+    def localize(self, template, prev_map_box=None):
         w, h = template.shape[::-1]
 
-        res = cv2.matchTemplate(self.reference, template, cv2.TM_CCOEFF_NORMED)
+        #use previous position to make search faster, by cropping reference 
+        #data set to the smaller starting range
+        if prev_map_box:
+            (x0, y0, x1, y1) = prev_map_box
+            # NOTE: its img[y: y + h, x: x + w]
+            margin_x0 = max(x0 - SEARCH_MARGIN, 0)
+            margin_y0 = max(y0 - SEARCH_MARGIN, 0)
+
+            margin_x1 = min(x1 + SEARCH_MARGIN, 2800)
+            margin_y1 = min(y1 + SEARCH_MARGIN, 2800)
+
+            reference = self.reference[margin_y0:margin_y1, margin_x0:margin_x1]
+        else:
+            reference = self.reference
+
+        res = cv2.matchTemplate(reference, template, cv2.TM_CCOEFF_NORMED)
 
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+        #print max_val
 
-        pos = (max_loc[0] + w/2, max_loc[1] + h/2)
+        #TODO: make this more elegant
+        #hack to reset reference image when the match is totally out of whack
+        if max_val < 0.1:
+            prev_map_box = None
+            res = cv2.matchTemplate(self.reference, template, cv2.TM_CCOEFF_NORMED)
 
-        return pos
+            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+            
+
+        #use this for approximate center location of the map
+        #pos = (max_loc[0] + w/2, max_loc[1] + h/2)
+        map_box = (max_loc[0], max_loc[1], max_loc[0] + w, max_loc[1] + h)
+
+        if prev_map_box:
+            map_box = (map_box[0] + margin_x0, 
+                       map_box[1] + margin_y0, 
+                       map_box[2] + margin_x0, 
+                       map_box[3] + margin_y0) 
+
+        return map_box
 
     def localize_all(self, template):
         w, h = template.shape[::-1]
