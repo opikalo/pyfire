@@ -1,6 +1,7 @@
 import time
 import logging
 import os
+from multiprocessing import Process, Pipe
 
 import numpy
 import cv, cv2
@@ -25,6 +26,21 @@ class LocalizeMap(object):
 
         return pos
 
+    def localize_all(self, template):
+        w, h = template.shape[::-1]
+        res = cv2.matchTemplate(self.reference, template, cv2.TM_CCOEFF_NORMED)
+
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+
+        threshold = max_val - 0.001
+        loc = numpy.where( res >= threshold)
+        pos = []
+        for pt in zip(*loc[::-1]):
+            pos.append((pt[0] + w/2, pt[1] + h/2))
+
+        return pos
+
+
 def test_localize_map():
     #use map of the buildings for localization
     building_filename = os.path.join(root, 'flash', 'fft2', 'export', 'frames', 
@@ -39,6 +55,21 @@ def test_localize_map():
         template = c.snap_gray()
         print mapper.localize(template)
         
+
+
+def test_localize_map_all():
+    #use map of the buildings for localization
+    building_filename = os.path.join(root, 'flash', 'fft2', 'export', 'frames', 
+                                     'DefineSprite_551', '1.png')
+    
+    mapper = LocalizeMap(building_filename)
+
+    filename = os.path.join(root, 'flash', 'fft2', 'processed', 'level1_start.png')
+    c = Capture(filename)
+    
+    while True:
+        template = c.snap_gray()
+        print mapper.localize_all(template)
 
 
 def test_localization():
@@ -76,4 +107,4 @@ def test_localization():
 
 
 if __name__ == '__main__':
-    test_localize_map()
+    test_localize_map_all()

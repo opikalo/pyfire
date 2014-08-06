@@ -58,3 +58,6 @@ docs/_build/
 
 # Image Thumbs
 Thumbs.db
+
+# App specific
+screen.cfg
