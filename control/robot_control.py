@@ -3,10 +3,12 @@ within the game """
  
 from math import *
 import random
+import time
 
 import matplotlib.pyplot as plt
 import networkx as nx
-from planning.astar.global_map import plot_map
+from planning.astar.global_map import (plot_map, GlobalMap, 
+                                       MIN_UNCONTRAINED_PENALTY)
 
 
 from copy import deepcopy
@@ -42,7 +44,7 @@ class robot:
         self.steering_noise    = 0.0
         self.distance_noise    = 0.0
         self.measurement_noise = 0.0
-        self.num_collisions    = 0
+        self.penalty    = 0
         self.num_steps         = 0
 
     # --------
@@ -74,15 +76,13 @@ class robot:
     #    checks of the robot pose collides with an obstacle, or
     # is too far outside the plane
 
-    def check_collision(self, grid):
-        for i in range(len(grid)):
-            for j in range(len(grid[0])):
-                if grid[i][j] == 1:
-                    dist = sqrt((self.x - float(i)) ** 2 + 
-                                (self.y - float(j)) ** 2)
-                    if dist < 0.5:
-                        self.num_collisions += 1
-                        return False
+    def check_collision(self, global_map):
+        penalty = global_map.check_collision([self.x, self.y])
+        if penalty == MIN_UNCONTRAINED_PENALTY:
+            return False
+
+        self.penalty += penalty
+
         return True
         
     def check_goal(self, goal, threshold = 20.0):
@@ -111,7 +111,7 @@ class robot:
         res.steering_noise    = self.steering_noise
         res.distance_noise    = self.distance_noise
         res.measurement_noise = self.measurement_noise
-        res.num_collisions    = self.num_collisions
+        res.penalty    = self.penalty
         res.num_steps         = self.num_steps + 1
 
         # apply noise
@@ -282,7 +282,7 @@ class particles:
 #
 
 
-def run(grid, start, goal, spath, params, printflag = False, speed = 5, timeout = 10000):
+def run(global_map, start, goal, spath, params, printflag = False, speed = 5, timeout = 2000):
 
     mg = nx.DiGraph()
 
@@ -346,9 +346,9 @@ def run(grid, start, goal, spath, params, printflag = False, speed = 5, timeout 
 
         Z = myrobot.sense()
         filter.sense(Z)
-
-        #if not myrobot.check_collision(grid):
-        #    print '##### Collision ####'
+        
+        #update penalty
+        myrobot.check_collision(global_map)
 
         err += (cte ** 2)
         N += 1
@@ -359,7 +359,7 @@ def run(grid, start, goal, spath, params, printflag = False, speed = 5, timeout 
         if printflag:
             print myrobot, cte, index, u
 
-    return [myrobot.check_goal(goal), myrobot.num_collisions, myrobot.num_steps, mg]
+    return [myrobot.check_goal(goal), myrobot.penalty, myrobot.num_steps, mg]
 
 
 # ------------------------------------------------
@@ -367,7 +367,7 @@ def run(grid, start, goal, spath, params, printflag = False, speed = 5, timeout 
 # this is our main routine
 #
 
-def main(grid, init, goal, steering_noise, distance_noise, measurement_noise, 
+def main(global_map, init, goal, steering_noise, distance_noise, measurement_noise, 
          weight_data, weight_smooth, p_gain, d_gain):
 
     start_pos = [2650, 2650]
@@ -376,19 +376,20 @@ def main(grid, init, goal, steering_noise, distance_noise, measurement_noise,
     graph_path = plan_path(start_pos, goal_pos)
     path_pos = nx.get_node_attributes(graph_path, 'pos')
 
-    sg = smooth_graph(graph_path, start_pos, goal_pos, weight_data, weight_smooth)
+    sg = smooth_graph(graph_path, start_pos, goal_pos, True, 
+                      weight_data, weight_smooth)
 
     sg_pos = nx.get_node_attributes(sg, 'pos')
 
     spath = graph_to_path(sg)
 
-    plot_map()
+    global_map.plot()
     
     nx.draw(sg, sg_pos, node_size=5, edge_color='r')
     
-    (reached_goal, num_collisions, num_steps, mg) = run(grid, start_pos, 
-                                                        goal_pos, spath, 
-                                                        [p_gain, d_gain])
+    (reached_goal, penalty, num_steps, mg) = run(global_map, start_pos, 
+                                                 goal_pos, spath, 
+                                                 [p_gain, d_gain])
 
     mg_pos = nx.get_node_attributes(mg, 'pos')
     nx.draw(mg, mg_pos, node_size=5, edge_color='b')
@@ -403,21 +404,31 @@ class Simulate(object):
 
         self.graph_path = plan_path(self.start_pos, self.goal_pos)
 
-        self.grid = [[]]
+        self.global_map = GlobalMap()
 
     def run(self, weight_data, weight_smooth, p_gain, d_gain):
-
+        print "starting run with", weight_data, weight_smooth, p_gain, d_gain
         sg = smooth_graph(self.graph_path, self.start_pos, self.goal_pos, 
-                          weight_data, weight_smooth)
+                          False, weight_data, weight_smooth)
 
         spath = graph_to_path(sg)
 
-        (reached_goal, num_collisions, num_steps, mg) = run(self.grid, 
-                                                            self.start_pos, 
-                                                            self.goal_pos, 
-                                                            spath, 
-                                                            [p_gain, d_gain])
-        return (reached_goal, num_collisions, num_steps)
+        (reached_goal, penalty, num_steps, mg) = run(self.global_map, 
+                                                     self.start_pos, 
+                                                     self.goal_pos, 
+                                                     spath, 
+                                                     [p_gain, d_gain])
+
+        print "finished run:", reached_goal, penalty, num_steps
+
+        #self.global_map.plot()
+
+        #mg_pos = nx.get_node_attributes(mg, 'pos')
+        #nx.draw(mg, mg_pos, node_size=5, edge_color='b')
+
+        #plt.show(block=False)
+
+        return (reached_goal, penalty, num_steps)
 
         
 
@@ -447,13 +458,13 @@ steering_noise    = 0.01
 distance_noise    = 0.03
 measurement_noise = 0.05
 
-weight_data       = 0.1
+weight_data       = 1.1
 weight_smooth     = 0.2
 p_gain            = 2.0
 d_gain            = 6.0
 
     
-#main(grid, init, goal, steering_noise, distance_noise, measurement_noise, 
+#main(GlobalMap(), init, goal, steering_noise, distance_noise, measurement_noise, 
 #     weight_data, weight_smooth, p_gain, d_gain)
 
 
@@ -464,6 +475,8 @@ def twiddle(init_params):
     dparams    = [1.0 for row in range(n_params)]
     params     = [0.0 for row in range(n_params)]
     K = 10
+
+    NO_GOAL_PENALTY = 10e10
 
     s = Simulate()
 
@@ -477,7 +490,7 @@ def twiddle(init_params):
         if ret[0]:
             best_error += ret[1] * 100 + ret[2]
         else:
-            best_error += 99999
+            best_error += NO_GOAL_PENALTY
     best_error = float(best_error) / float(k+1)
     print best_error
 
@@ -491,7 +504,7 @@ def twiddle(init_params):
                 if ret[0]:
                     err += ret[1] * 100 + ret[2]
                 else:
-                    err += 99999
+                    err += NO_GOAL_PENALTY
             print float(err) / float(k+1)
             if err < best_error:
                 best_error = float(err) / float(k+1)
@@ -504,7 +517,7 @@ def twiddle(init_params):
                     if ret[0]:
                         err += ret[1] * 100 + ret[2]
                     else:
-                        err += 99999
+                        err += NO_GOAL_PENALTY
                 print float(err) / float(k+1)
                 if err < best_error:
                     best_error = float(err) / float(k+1)
@@ -516,6 +529,37 @@ def twiddle(init_params):
         print 'Twiddle #', n, params, ' -> ', best_error
     print ' '
     return params
+
+
+def mytwiddle(init_param, tol = 0.2): #Make this tolerance bigger if you are timing out!
+            
+    p = [0, 0, 0]
+    dp = [1, 1, 1]
+    
+    best_err = run(p)
+    while (sum([abs(x) for x in dp]) > tol):
+        for i in range(len(p)):
+            p[i] += dp[i]
+            err = run(p)
+
+            if err < best_err:
+                best_err = err
+                dp[i]*=1.1
+                continue
+
+            p[i] -= 2*dp[i]
+            err = run(p)
+            if err < best_err:
+                best_err = err
+                dp[i]-= 2*dp[i]
+                continue
+
+            p[i] += dp[i]
+            dp[i]*=0.9
+    
+            #print "param", p, "dp", dp, "best_err", best_err
+
+    return run(p)
 
 
 twiddle([weight_data, weight_smooth, p_gain, d_gain])
