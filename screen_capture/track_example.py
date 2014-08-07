@@ -46,7 +46,8 @@ class LocalizeStreamProcess(Process):
             time_pos = (time.time(), pos)
             self.connec.send(time_pos)
             end_time = time.time()
-            #print 1/(end_time-start_time)
+            fps = 1/(end_time-start_time)
+            print "%2d frames per sec\r" % fps,
 
 def main():
     conn1, conn2  = Pipe()

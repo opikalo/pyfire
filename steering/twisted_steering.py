@@ -30,10 +30,10 @@ def press(cmd, timeout):
     key = inv_key_map[cmd]
     _key_down(key)
     d = task.deferLater(reactor, timeout, _key_up, key)
-    
-time.sleep(5)
-press('up', 10)
-press('right',10)
 
-# f() will only be called if the event loop is started.
-reactor.run()
+if __name__ == '__main__':    
+    time.sleep(5)
+    press('up', 10)
+    press('right',10)
+
+    reactor.run()

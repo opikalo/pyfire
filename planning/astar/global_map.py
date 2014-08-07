@@ -25,6 +25,7 @@ def plot_map():
 
     plt.imshow(img,zorder=0)
 
+    return fig, ax
 
 DEFAULT_COLOR = (255, 255, 255, 0)
 GREEN_COLOR = (0, 128, 0, 255)
