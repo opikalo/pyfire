@@ -1,5 +1,6 @@
 """ Makes a robot implementation from the class roam aound the path
 within the game """
+from __future__ import division
  
 from math import *
 import random
@@ -96,7 +97,7 @@ class robot:
     #    distance = total distance driven, most be non-negative
 
     def move(self, steering, distance, 
-             tolerance = 0.001, max_steering_angle = pi / 6.0, real=False):
+             tolerance = 0.001, max_steering_angle = pi / 6.0, real=False, fps=25):
 
         if steering > max_steering_angle:
             steering = max_steering_angle
@@ -107,13 +108,14 @@ class robot:
 
         cmds = []
         if real:
-            if steering > 0:
-                cmds.append(('right', steering*.5))
-            else:
-                cmds.append(('left', abs(steering)*.5))
-
             if distance:
-                cmds.append(('up', distance*0.03))
+                cmds.append(('up', distance*0.005*(25/fps)))
+
+            if steering > 0:
+                cmds.append(('right', steering*.9*(25/fps)))
+            else:
+                cmds.append(('left', abs(steering)*.9*(25/fps)))
+
 
                 
         # make a new copy

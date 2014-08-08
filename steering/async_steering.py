@@ -65,3 +65,10 @@ if __name__=='__main__':
     async_steering.call('break', .5)
 
     async_steering.wait()
+
+    async_steering = AsyncFactory(press, cb_func)
+    async_steering.call('up', .1)
+    async_steering.call('down', .2)
+    async_steering.call('left', .3)
+    async_steering.call('right', .4)
+    async_steering.call('break', .5)

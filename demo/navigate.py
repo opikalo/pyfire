@@ -51,7 +51,7 @@ class AsyncFactory:
         self.pool = Pool(processes=4)
  
     def call(self,*args, **kwargs):
-        self.pool.apply_async(self.func, args, kwargs, self.cb_func)
+        return self.pool.apply_async(self.func, args, kwargs, self.cb_func)
  
     def wait(self):
         self.pool.close()
@@ -118,7 +118,7 @@ class NavigateProcess(Process):
 
         #smooth
         print "smoothing..."
-        sg = smooth_graph(graph_path, self.start_pos, self.goal_pos, True, 
+        sg = smooth_graph(graph_path, self.start_pos, self.goal_pos, False, 
                           weight_data, weight_smooth)
 
         #extract points from ad smoothed graph
@@ -168,8 +168,10 @@ class NavigateProcess(Process):
         cte  = 0.0
         err  = 0.0
         N    = 0
+        fps = 25
 
         index = 0 # index into the path
+        async_res = []
 
         while not myrobot.check_goal(self.goal_pos):
             start_time = time.time()
@@ -221,13 +223,22 @@ class NavigateProcess(Process):
 
             steer = - self.p_gain * cte - self.d_gain * diff_cte 
 
-            myrobot, cmds = myrobot.move(steer, self.speed, real=True)
+            myrobot, cmds = myrobot.move(steer, self.speed, real=True, fps = fps)
             
             print cte
+            
+            #wait for the previous commands to complete before issuing new ones
+            for r in async_res:
+                #retyrn when the call is completed
+                r.ready()
+
+            #async_steering.wait()
+
+            async_res = []
             for cmd, timeout in cmds:
-                print cte, steer, cmd[0]
-                async_steering.call(cmd, timeout)
-                pass
+                print cte, steer, cmd[0], fps
+                async_res.append(async_steering.call(cmd, timeout))
+                pending = True
 
             #pfilter.move(steer, self.speed)
 
@@ -252,7 +263,7 @@ class NavigateProcess(Process):
             fps = 1/(end_time-start_time)
             #print "%2d frames per sec\r" % fps,
             time.sleep(0.01)
-            #async_steering.wait()
+
 
 def main():
     plot_map()
