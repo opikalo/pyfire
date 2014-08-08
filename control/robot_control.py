@@ -16,7 +16,7 @@ from collections import OrderedDict
 
 from planning.astar.local_graph import plan_path
 from smoothing.gd import smooth_graph, graph_to_path
-
+from steering.steering import Steering
 # don't change the noise paameters
 
 #steering_noise    = 0.1
@@ -47,6 +47,7 @@ class robot:
         self.penalty    = 0
         self.num_steps         = 0
 
+        self.steering = Steering()
     # --------
     # set: 
     #	sets a robot coordinate
@@ -95,7 +96,7 @@ class robot:
     #    distance = total distance driven, most be non-negative
 
     def move(self, steering, distance, 
-             tolerance = 0.001, max_steering_angle = pi / 6.0):
+             tolerance = 0.001, max_steering_angle = pi / 6.0, real=False):
 
         if steering > max_steering_angle:
             steering = max_steering_angle
@@ -104,7 +105,17 @@ class robot:
         if distance < 0.0:
             distance = 0.0
 
+        cmds = []
+        if real:
+            if steering > 0:
+                cmds.append(('right', steering*.5))
+            else:
+                cmds.append(('left', abs(steering)*.5))
 
+            if distance:
+                cmds.append(('up', distance*0.03))
+
+                
         # make a new copy
         res = robot()
         res.length            = self.length
@@ -143,6 +154,8 @@ class robot:
 
         # check for collision
         # res.check_collision(grid)
+        if real:
+            return res, cmds
 
         return res
 
@@ -562,4 +575,4 @@ def mytwiddle(init_param, tol = 0.2): #Make this tolerance bigger if you are tim
     return run(p)
 
 
-twiddle([weight_data, weight_smooth, p_gain, d_gain])
+#twiddle([weight_data, weight_smooth, p_gain, d_gain])

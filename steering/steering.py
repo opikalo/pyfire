@@ -5,24 +5,40 @@ import win32con
 
 class Steering(object):
     def __init__(self):
-        self.current_key = None
-
+        self.current_keys = []
+        
+        
     def _key_event(self, key):
         win32api.keybd_event(key, 0, 0, 0)
-        time.sleep(.1)
+        self.current_keys.append(key)
+        #time.sleep(.1)
+        #win32api.keybd_event(key, 0, win32con.KEYEVENTF_KEYUP ,0)
+
+    def _key_press(self, key):
+        win32api.keybd_event(key, 0, 0, 0)
+        time.sleep(.03)
         win32api.keybd_event(key, 0, win32con.KEYEVENTF_KEYUP ,0)
 
+
+    def cancel_all(self):
+        for key in self.current_keys:
+            win32api.keybd_event(key, 0, win32con.KEYEVENTF_KEYUP ,0)
+
     def manual_break(self):
-        self._key_event(win32con.VK_SPACE)
+        self._key_press(win32con.VK_SPACE)
 
     def gas(self):
-        self._key_event(win32con.VK_UP)
+        key = win32con.VK_UP
+        win32api.keybd_event(key, 0, 0, 0)
+        time.sleep(.025)
+        win32api.keybd_event(key, 0, win32con.KEYEVENTF_KEYUP ,0)
+
 
     def right(self):
-        self._key_event(win32con.VK_RIGHT)
+        self._key_press(win32con.VK_RIGHT)
 
     def left(self):
-        self._key_event(win32con.VK_LEFT)
+        self._key_press(win32con.VK_LEFT)
 
 
 if __name__ == '__main__':
