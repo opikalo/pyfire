@@ -21,7 +21,7 @@ template_filename = os.path.join(root, 'flash', 'fft2', 'processed', 'first_scre
 img2 = cv2.imread(template_filename, cv2.CV_LOAD_IMAGE_GRAYSCALE)
 
 
-detector = cv2.SURF(800)
+detector = cv2.SURF(0)
 norm = cv2.NORM_L2
 flann_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
 
@@ -36,6 +36,21 @@ p1, p2, kp_pairs = filter_matches(kp1, kp2, raw_matches)
 if len(p1) >= 4:
     H, status = cv2.findHomography(p1, p2, cv2.RANSAC, 5.0)
     print '%d / %d  inliers/matched' % (np.sum(status), len(status))
+
+    if H is not None:
+
+        h1, w1 = img1.shape[:2]
+        h2, w2 = img2.shape[:2]
+
+        corners = np.float32([[0, 0], [w1, 0], [w1, h1], [0, h1]])
+        corners = np.int32( cv2.perspectiveTransform(corners.reshape(1, -1, 2), H).reshape(-1, 2) ) #+ (w1, 0) 
+        cv2.polylines(img2, [corners], True, (255, 255, 255))
+        
+        center = np.int32(np.mean(corners, axis=0))
+        print center
+        import pdb; pdb.set_trace()
+        cv2.circle(img2, (center[0], center[1]), 5,(255,255,255),)
+        cv2.imshow('hello1', img2)
 else:
     H, status = None, None
     print '%d matches found, not enough for homography estimation' % len(p1)

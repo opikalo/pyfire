@@ -143,7 +143,7 @@ class NavigateProcess(Process):
         myrobot = robot()
 
         template = self.c.snap_gray()
-        map_box = self.mapper.localize(template, None)
+        map_box, center = self.mapper.extended_localize(template, None)
 
         (x0, y0, x1, y1) = map_box
 
@@ -182,16 +182,13 @@ class NavigateProcess(Process):
             # compute the CTE
 
             template = self.c.snap_gray()
-            map_box = self.mapper.localize(template, prev_map_box)
+            map_box, center = self.mapper.extended_localize(template, prev_map_box)
             prev_map_box = map_box
 
             (x0, y0, x1, y1) = map_box
 
-            #this is approximate sensor measurement
-            ax = (x0 + x1)/2
-            ay = (y0 + y1)/2
+            (x, y) = (center[0], center[1])
 
-            (x, y) = (ax, ay)
             estimate = (x, y)
 
             #find the rigt spath

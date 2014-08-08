@@ -23,16 +23,16 @@ FLANN_INDEX_LSH    = 6
 def init_feature(name):
     chunks = name.split('-')
     if chunks[0] == 'sift':
-        detector = cv2.SIFT()
+        detector = cv2.SIFT(0)
         norm = cv2.NORM_L2
     elif chunks[0] == 'surf':
-        detector = cv2.SURF(800)
+        detector = cv2.SURF(0)
         norm = cv2.NORM_L2
     elif chunks[0] == 'orb':
-        detector = cv2.ORB(400)
+        detector = cv2.ORB(0)
         norm = cv2.NORM_HAMMING
     elif chunks[0] == 'brisk':
-        detector = cv2.BRISK()
+        detector = cv2.BRISK(0)
         norm = cv2.NORM_HAMMING
     else:
         return None, None

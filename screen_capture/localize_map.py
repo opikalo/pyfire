@@ -9,13 +9,19 @@ from matplotlib import pyplot as plt
 
 from utils import root
 from capture import Capture, find_best_image
+from find_image import FindImage
 
 SEARCH_MARGIN = 50
 
 class LocalizeMap(object):
-    def __init__(self, filename):
+    def __init__(self, filename, find_filename = None):
         #reference localization image
         self.reference = cv2.imread(filename, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        
+        if find_filename:
+            self.finder = FindImage(find_filename)
+            
+        
 
     def localize(self, template, prev_map_box=None):
         w, h = template.shape[::-1]
@@ -51,7 +57,7 @@ class LocalizeMap(object):
 
         #use this for approximate center location of the map
         #pos = (max_loc[0] + w/2, max_loc[1] + h/2)
-        map_box = (max_loc[0], max_loc[1], max_loc[0] + w, max_loc[1] + h)
+        map_box = (max_loc[0], max_loc[1], max_loc[0] + w, max_loc[1] + h)            
 
         if prev_map_box:
             map_box = (map_box[0] + margin_x0, 
@@ -60,6 +66,23 @@ class LocalizeMap(object):
                        map_box[3] + margin_y0) 
 
         return map_box
+
+
+    def extended_localize(self, template, prev_map_box=None):
+        
+        (x0, y0, x1, y1) = self.localize(template, prev_map_box)
+
+        #this is canter location
+        ax = (x0 + x1)/2
+        ay = (y0 + y1)/2
+        print "cccc", ax, ay
+        
+        if  (350 >= ax >= 2800 - 351) or (250 >= ay >= 2800 - 251):
+            center = self.finder.locate(template)
+        else:
+            center = (ax, ay)
+
+        return ((x0, y0, x1, y1), center)
 
     def localize_all(self, template):
         w, h = template.shape[::-1]
