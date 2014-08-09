@@ -67,7 +67,7 @@ A frame rate of 25 fps was consistently obeserved. Here is [localization video d
 ## Car localization
 During most of the game the car is normally right in the center of the map. As result we can use map localization for figuring out car position, as long as we are not driving in the outliers of the game.
 
-For game outliers (they are particularly troublesome for Level 1, I have attempted to track car using rotation invariant holomography feature object detection usigng sift/surf, with mixed results. The frame rate drops significantly (it is very computationally heavy), almost down to 2 fps. And results are noisy. Quite often, due to low resolution of the game, there are too few features (4 are necessary to do holomography), in that case I just take the average for geometry from the features found. If no features are matched, I fall back to map center.
+For game outliers (they are particularly troublesome for Level 1, I have attempted to track car using rotation invariant momography feature object detection usigng sift/surf, with mixed results. The frame rate drops significantly (it is very computationally heavy), almost down to 2 fps. And results are noisy. Quite often, due to low resolution of the game, there are too few features (4 are necessary to do homography), in that case I just take the average for geometry from the features found. If no features are matched, I fall back to map center.
 
 A particle filter was used to deal with the noise on car positional measurement, but this work has not being completed fully (particle filter position estimation is in the `other` folder)
 
