@@ -49,6 +49,12 @@ Combined path for level 1  looks like this, highlighted with red:
 ![Constrained graph construction](https://raw.githubusercontent.com/opikalo/pyfire/master/planning/snapshots/local_global_path_planning.png)
 
 # Smoothing
+Currently both constrained smoothing and "fixed" smoothing are supported by the code. When global constrained graph is constructed, each node in this graph is marked as fixed, so there is an option to keep smoothing only to local graphs (unconstrained motion). We use the same gradient descent algorithm as described in class:
+![Unfixed Smoothing](https://raw.githubusercontent.com/opikalo/pyfire/master/smoothing/snapshots/smoothing_graph_unfixed.png)
+
+![fixed Smoothing](https://raw.githubusercontent.com/opikalo/pyfire/master/smoothing/snapshots/smoothing_graph_fixed.png)
+
+
 
 Map localization demo:
 http://youtu.be/rahvhGxrYP0
