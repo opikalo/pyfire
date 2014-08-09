@@ -12,6 +12,10 @@ It is worth noting that there are at least 5 different games developed by the sa
 
 This particular game was chosen because it allows for maximum application of knowledge from the course.
 
+# Quick demo
+[![Quick demo](http://img.youtube.com/vi/abh-948NupE/0.jpg)](http://www.youtube.com/watch?v=abh-948NupE)
+[Youtube](http://www.youtube.com/watch?v=abh-948NupE)
+
 # Technical overview
 The general idea is to take a snapshot of the game in progress (screen grab) and perform feature  recognition on the image to figure out the position of the objects in the game. At this stage some additional information from the game is necessary to complete the high level goals, i.e. navigation from start to goal requires additional knowledge of the map, obstacles and terrain. This data is obtained by decompiling flash image usign off the shelf free tools. 
 
@@ -19,7 +23,7 @@ The general idea is to take a snapshot of the game in progress (screen grab) and
 ## Planning
 Some advanced planning is required to get from point A to point B and this planning has to be reasonable (no driving through the buildings or pools). As results there are two parts to planning: unconstrained planning (in the areas of parking within the game) and constrained planning (driving on one way streets / obeying traffic laws ).
 
-For unconstrained planning (ususally around start and goal positions), a square graph is constructed around the starting position, and the penalty weight is assigned for each edge, according to the position of the nodes of the edge. here is an example of the local edge around starting position of the level1 of the game:
+For unconstrained planning (ususally around start and goal positions), a square graph is constructed around the starting position, and the penalty weight is assigned for each edge, according to the position of the nodes of the edge. Here is an example of the local edge around starting position of the level1 of the game:
 
 
 ![Unconstrained graph construction and weight assignment](https://raw.githubusercontent.com/opikalo/pyfire/master/planning/snapshots/graph_weights.png)
