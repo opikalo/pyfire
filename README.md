@@ -13,6 +13,7 @@ It is worth noting that there are at least 5 different games developed by the sa
 This particular game was chosen because it allows for maximum application of knowledge from the course.
 
 # Quick demo
+You can see it inaction playing level 2 almost to completion:
 [![Quick demo](http://img.youtube.com/vi/abh-948NupE/0.jpg)](http://www.youtube.com/watch?v=abh-948NupE)
 [Youtube](http://www.youtube.com/watch?v=abh-948NupE)
 
@@ -23,10 +24,21 @@ The general idea is to take a snapshot of the game in progress (screen grab) and
 ## Planning
 Some advanced planning is required to get from point A to point B and this planning has to be reasonable (no driving through the buildings or pools). As results there are two parts to planning: unconstrained planning (in the areas of parking within the game) and constrained planning (driving on one way streets / obeying traffic laws ).
 
+The game has built in waypoints (stored in a binary format) that are used to contruct a global graph for constrained navigation. 
+
+
 For unconstrained planning (ususally around start and goal positions), a square graph is constructed around the starting position, and the penalty weight is assigned for each edge, according to the position of the nodes of the edge. Here is an example of the local edge around starting position of the level1 of the game:
 
 
 ![Unconstrained graph construction and weight assignment](https://raw.githubusercontent.com/opikalo/pyfire/master/planning/snapshots/graph_weights.png)
+
+Here is the example of the path planning using A* in unconstrained enviroment:
+
+![Unconstrained graph planning](https://raw.githubusercontent.com/opikalo/pyfire/master/planning/snapshots/unconstrained_planning_astar.png)
+
+Combined path for level 1  looks like this:
+
+![Constrained graph construction](https://raw.githubusercontent.com/opikalo/pyfire/master/planning/snapshots/local_global_path_planning.png)
 
 
 
