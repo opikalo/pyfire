@@ -76,8 +76,20 @@ Steering was the most time consuming and annoying part of the project. To make c
 
 As it is I'm using a pool of CPUs to send keys asyncronously, which has a wild overhead, but given a timing constraint on the project, I had no better solution. As result performance of the game play is widely dependent on the muscle of the PC. Steering is the only component that is OS specific (Wiindows) at this stage, but I'm sure this can be isolated through high level API nicely too.
 
+# Robot model
+A bycicle robot from the class is used for the robot modelling, without any changes, just calibrated for length and speed. This is currently the weakest part of the implementation. Some serious model fitting is necessary to make particle filter work properly. This is very high on the to-do list.
+
 # Control
-It is very bare bones at this stage:measure robot position, feed it into PID controller (actually just P controller at this time). 
+It is very bare bones at this stage:measure robot position, feed it into PID controller (actually just P controller at this time). I have implemented `robot_control.py` that allows class robot to run through the path, and run twiddle on it to characterize performance tracking. But until the robot model is adjusted to correspond the real behavior of the firetruck there is little purpose in the twiddle.
+
+# Obstacles
+I have done some work on figuring out and detecting moving objects in the game, but it is very experimental, see `screen_capture` folder for details. I assume that I can add some dynamic programming to the code to allow for swerving around other cars / pedestrians in the future.
+
+# Installation and use
+Please intall scipy-stack, opencv, networksx and some other packages from unofficial python binaries. I have used virtual environment with all packages in `misc/requirements.txt` 
+To see a demo, launch a web browser with the game, showing the map of start and goal. From command line, run `python navigate.py` and click on the web browser of the game to redirect key presses to the application.
+
+
 
 
 
