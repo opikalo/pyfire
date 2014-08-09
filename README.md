@@ -24,8 +24,7 @@ The general idea is to take a snapshot of the game in progress (screen grab) and
 ## Planning
 Some advanced planning is required to get from point A to point B and this planning has to be reasonable (no driving through the buildings or pools). As results there are two parts to planning: unconstrained planning (in the areas of parking within the game) and constrained planning (driving on one way streets / obeying traffic laws ).
 
-The game has built in waypoints (stored in a binary format) that are used to contruct a global graph for constrained navigation. 
-
+The game has built in waypoints (stored in a binary format) that are used to contruct a global graph for constrained navigation taht is used for cars that are navigating in the game. 
 
 For unconstrained planning (ususally around start and goal positions), a square graph is constructed around the starting position, and the penalty weight is assigned for each edge, according to the position of the nodes of the edge. Here is an example of the local edge around starting position of the level1 of the game:
 
@@ -36,11 +35,20 @@ Here is the example of the path planning using A* in unconstrained enviroment:
 
 ![Unconstrained graph planning](https://raw.githubusercontent.com/opikalo/pyfire/master/planning/snapshots/unconstrained_planning_astar.png)
 
-Combined path for level 1  looks like this:
+
+So the path planning algorithm is the following: 
+* construct local unconstrained grid graphs for start and goal destinations. Graphs have to be large enough to reach the constrained graph created in the next step, assign penalty weight for each edge based on node location. The graph has to be dense enough not to skip "features" of landscape.
+* construct global graph based on the waypoints used for cars in the game (those waypoints constitute legal motions within the game and also summarise traffic rules)
+* stitch together local unconstrained graph and global graph usign the following algorithm:
+* for each local node that is within a certain threshold from the global node, join them
+
+Finally, the path is determined by A* algorithm from start to goal.
+
+Combined path for level 1  looks like this, highlighted with red:
 
 ![Constrained graph construction](https://raw.githubusercontent.com/opikalo/pyfire/master/planning/snapshots/local_global_path_planning.png)
 
-
+# Smoothing
 
 Map localization demo:
 http://youtu.be/rahvhGxrYP0
