@@ -48,18 +48,38 @@ Combined path for level 1  looks like this, highlighted with red:
 
 ![Constrained graph construction](https://raw.githubusercontent.com/opikalo/pyfire/master/planning/snapshots/local_global_path_planning.png)
 
+Teh only difference for the class material is that I used directional graphs rather then grids, but all the rest is the same. 
+
 # Smoothing
 Currently both constrained smoothing and "fixed" smoothing are supported by the code. When global constrained graph is constructed, each node in this graph is marked as fixed, so there is an option to keep smoothing only to local graphs (unconstrained motion). We use the same gradient descent algorithm as described in class:
 ![Unfixed Smoothing](https://raw.githubusercontent.com/opikalo/pyfire/master/smoothing/snapshots/smoothing_graph_unfixed.png)
-
+Here is some fixed smoothing:
 ![fixed Smoothing](https://raw.githubusercontent.com/opikalo/pyfire/master/smoothing/snapshots/smoothing_graph_fixed.png)
+After smoothing the path is split up in chuncks. The same algorithm used for updating which chunck of the path to use for control use for CTE computation.
+
+# Localization 
+Localization is split up in two parts: map localization and car localization within the map
+
+## Map localization
+At any point during the game, only a part of the global map is visible to the end user. A snapshot of that map is templateMatched (histogram based localization)to the global map of the game in order to determine which part of the global map is on the screen. you can think of the global map providing the data about the world, and a car trying to find a match against the global view using local snapshot image. In order to speed up localization only a portion of the global image is used in localizing the data (the image is truncated with some margine around previous position).
+A frame rate of 25 fps was consistently obeserved. Here is [localization video demo] (http://youtu.be/rahvhGxrYP0)
+
+## Car localization
+During most of the game the car is normally right in the center of the map. As result we can use map localization for figuring out car position, as long as we are not driving in the outliers of the game.
+
+For game outliers (they are particularly troublesome for Level 1, I have attempted to track car using rotation invariant holomography feature object detection usigng sift/surf, with mixed results. The frame rate drops significantly (it is very computationally heavy), almost down to 2 fps. And results are noisy. Quite often, due to low resolution of the game, there are too few features (4 are necessary to do holomography), in that case I just take the average for geometry from the features found. If no features are matched, I fall back to map center.
+
+A particle filter was used to deal with the noise on car positional measurement, but this work has not being completed fully (particle filter position estimation is in the `other` folder)
+
+# Steering
+Steering was the most time consuming and annoying part of the project. To make car go you have to press a key, and hold it for certain **exact** period of time. This has to be done without slowing down the rest of the loop, thus requiring some kind of concurrent scheduling (aka twisted). However, twisted does not pplay niceslly with `multiprocessing` package in python, and if I piled up all the pieces (matplotlib display, image capturing, localization, etc) the performance of the app went down to 1/2 frames per sec.
+
+As it is I'm using a pool of CPUs to send keys asyncronously, which has a wild overhead, but given a timing constraint on the project, I had no better solution. As result performance of the game play is widely dependent on the muscle of the PC. Steering is the only component that is OS specific (Wiindows) at this stage, but I'm sure this can be isolated through high level API nicely too.
+
+# Control
+It is very bare bones at this stage:measure robot position, feed it into PID controller (actually just P controller at this time). 
 
 
 
-Map localization demo:
-http://youtu.be/rahvhGxrYP0
 
-
-Good graph tutorial:
-https://www.wakari.io/sharing/bundle/nvikram/Basics%20of%20Networkx?has_login=False
 
