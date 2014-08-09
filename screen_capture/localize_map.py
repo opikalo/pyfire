@@ -17,11 +17,10 @@ class LocalizeMap(object):
     def __init__(self, filename, find_filename = None):
         #reference localization image
         self.reference = cv2.imread(filename, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-        
-        if find_filename:
-            self.finder = FindImage(find_filename)
-            
-        
+
+        self.find_filename = find_filename
+
+        self.finder = None        
 
     def localize(self, template, prev_map_box=None):
         w, h = template.shape[::-1]
@@ -77,10 +76,27 @@ class LocalizeMap(object):
         ay = (y0 + y1)/2
         print "cccc", ax, ay
         
-        if  (350 >= ax >= 2800 - 351) or (250 >= ay >= 2800 - 251):
+        center = (ax, ay)
+        #if  (355 < ax < 2800 - 355) and (260 < ay < 2800 - 260):
+        #    center = (ax, ay)
+            
+        if (260 > ay):
+            center = (ax, ay - 36)            
+        elif False:
+
+            if not self.finder:
+                self.finder = FindImage(self.find_filename)
+
             center = self.finder.locate(template)
-        else:
-            center = (ax, ay)
+
+            if center is None:
+                center = (ax, ay)
+            else:
+                center[0] = center[0] + x0
+                center[1] = center[1] + y0
+            
+            print '******', center
+
 
         return ((x0, y0, x1, y1), center)
 

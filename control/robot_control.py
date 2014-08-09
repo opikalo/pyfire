@@ -97,7 +97,7 @@ class robot:
     #    distance = total distance driven, most be non-negative
 
     def move(self, steering, distance, 
-             tolerance = 0.001, max_steering_angle = pi / 6.0, real=False, fps=25):
+             tolerance = 0.0001, max_steering_angle = pi / 6.0, real=False, fps=25):
 
         if steering > max_steering_angle:
             steering = max_steering_angle

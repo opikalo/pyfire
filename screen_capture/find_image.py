@@ -66,8 +66,13 @@ class FindImage(object):
                     if False:
                         vis = explore_match('hello', self.img1, img2, kp_pairs, status, H)
         else:
-            print '%d matches found, not enough for homography estimation' % len(p1)
+            if len(p2):
+                center = np.int32(np.mean(p2, axis=0))
+            else:
+                center = None
 
+            print '%d matches found, not enough for homography estimation' % len(p1)
+            
         return center        
         
 

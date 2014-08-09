@@ -86,7 +86,8 @@ class NavigateProcess(Process):
 
         map_filename = os.path.join(root, 'flash', 'fft2', 'processed', 'aligned_localization_data_map.png')
 
-        self.mapper = LocalizeMap(map_filename)
+        car_filename = os.path.join(root, 'flash', 'fft2', 'export', 'images', '445.png')
+        self.mapper = LocalizeMap(map_filename, car_filename)
 
         filename = os.path.join(root, 'flash', 'fft2', 'processed', 'level1_start.png')
         self.c = Capture(filename)
@@ -94,7 +95,11 @@ class NavigateProcess(Process):
         #default starting value
         self.start_pos = [2650, 2650]
 
-        self.goal_pos = [1900, 400]
+        #level1
+        #self.goal_pos = [1900, 400]
+        
+        #leve2
+        self.goal_pos = [1252, 1476]
 
         #from twiddle
         weight_data = 1.1
@@ -143,18 +148,15 @@ class NavigateProcess(Process):
         myrobot = robot()
 
         template = self.c.snap_gray()
+        #map_box = self.mapper.localize(template, None)
+        #center = ((map_box[0] + map_box[2])/2, (map_box[1] + map_box[3])/2)
         map_box, center = self.mapper.extended_localize(template, None)
 
-        (x0, y0, x1, y1) = map_box
-
         #this is approximate sensor measurement
-        ax = (x0 + x1)/2
-        ay = (y0 + y1)/2
-
-        self.start_pos = (ax, ay)
+        self.start_pos = (center[0], center[1])
 
 
-        myrobot.set(self.start_pos[0], self.start_pos[1], -pi)
+        myrobot.set(self.start_pos[0], self.start_pos[1], pi/2)
         mg.add_node(0, pos=(myrobot.x, myrobot.y))
 
         myrobot.set_noise(0,0,0)
