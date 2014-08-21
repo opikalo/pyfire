@@ -14,9 +14,9 @@ This particular game was chosen because it allows for maximum application of kno
 
 # Quick demo
 You can see it inaction playing level 2 almost to completion:
-[![ScreenShot](https://raw.github.com/GabLeRoux/WebMole/master/ressources/WebMole_Youtube_Video.png)](http://youtu.be/vt5fpE0bzSY)
+[![ScreenShot](http://img.youtube.com/vi/abh-948NupE/0.jpg)](http://youtu.be/vt5fpE0bzSY)
 
-[![Quick demo](http://img.youtube.com/vi/abh-948NupE/0.jpg)](http://www.youtube.com/watch?v=abh-948NupE)
+[![Quick demo](http://img.youtube.com/vi/abh-948NupE/0.jpg)](http://www.youtube.com/abh-948NupE)
 [Youtube](http://www.youtube.com/watch?v=abh-948NupE)
 
 # Technical overview
