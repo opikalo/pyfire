@@ -16,6 +16,8 @@ This particular game was chosen because it allows for maximum application of kno
 You can see it inaction playing level 2 almost to completion:
 [![ScreenShot](http://img.youtube.com/vi/abh-948NupE/0.jpg)](http://youtu.be/vt5fpE0bzSY)
 
+[![Alt text for your video](http://img.youtube.com/vi/T-D1KVIuvjA/0.jpg)](http://www.youtube.com/watch?v=T-D1KVIuvjA)
+
 [![Quick demo](http://img.youtube.com/vi/abh-948NupE/0.jpg)](http://www.youtube.com/abh-948NupE)
 [Youtube](http://www.youtube.com/watch?v=abh-948NupE)
 
