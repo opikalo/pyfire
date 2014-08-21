@@ -15,7 +15,7 @@ This particular game was chosen because it allows for maximum application of kno
 # Quick demo
 You can see it inaction playing level 2 almost to completion:
 
-[![Quick demo](https://raw.githubusercontent.com/opikalo/pyfire/master/video_demo.png)](http://www.youtube.com/watch?v=abh-948NupE)
+[![Quick demo](https://raw.githubusercontent.com/opikalo/pyfire/master/demo/doc/video_demo.png)](http://www.youtube.com/watch?v=abh-948NupE)
 [Youtube](http://www.youtube.com/watch?v=abh-948NupE)
 
 # Technical overview
